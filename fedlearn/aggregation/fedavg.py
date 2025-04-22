@@ -44,7 +44,8 @@ def fedavg_aggregate(global_model, client_models, client_weights=None):
     # Get the state dict from the first client to initialize aggregated_params
     # with the correct parameter names and shapes
     for name, param in client_models[0].state_dict().items():
-        aggregated_params[name] = torch.zeros_like(param)
+        # Use same dtype as the client parameter to avoid type mismatch
+        aggregated_params[name] = torch.zeros_like(param, dtype=param.dtype)
     
     # Aggregate parameters from all clients with their respective weights
     for client_idx, client_model in enumerate(client_models):
@@ -52,8 +53,9 @@ def fedavg_aggregate(global_model, client_models, client_weights=None):
         client_params = client_model.state_dict()
         
         for name, param in client_params.items():
-            # Weighted sum of parameters
-            aggregated_params[name] += param.data * client_weight
+            # Ensure consistent data types for the addition operation
+            weighted_param = param.data.to(dtype=aggregated_params[name].dtype) * client_weight
+            aggregated_params[name] += weighted_param
     
     # Load the aggregated parameters into the model
     aggregated_model.load_state_dict(aggregated_params)
