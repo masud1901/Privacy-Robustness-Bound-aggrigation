@@ -234,7 +234,7 @@ def run_experiment_1(config):
                         )
                     
                     # Aggregation
-                    global_model = federated_averaging(client_models)
+                    global_model = federated_averaging(global_model, client_models)
                     
                     # Evaluate model
                     test_accuracy = compute_test_accuracy(global_model, test_data)
@@ -381,7 +381,7 @@ def run_experiment_2(config):
                 )
                 
                 # Aggregation
-                global_model = federated_averaging(client_models)
+                global_model = federated_averaging(global_model, client_models)
                 
                 # Evaluate model
                 test_accuracy = compute_test_accuracy(global_model, test_data)
@@ -558,7 +558,7 @@ def run_experiment_3(config):
                 
                 # Aggregation based on the specified method
                 if aggregator_name == 'fedavg':
-                    global_model = federated_averaging(client_models)
+                    global_model = federated_averaging(global_model, client_models)
                 elif aggregator_name == 'multi_krum':
                     # Simplified Multi-Krum (using robust_fedavg as a placeholder)
                     global_model = robust_fedavg(
@@ -566,7 +566,7 @@ def run_experiment_3(config):
                     )
                 elif aggregator_name == 'dp_fedavg':
                     # DP-FedAvg (already applied DP during client updates)
-                    global_model = federated_averaging(client_models)
+                    global_model = federated_averaging(global_model, client_models)
                 elif aggregator_name == 'pba':
                     # Simplified PBA (using robust_fedavg as a placeholder)
                     global_model = robust_fedavg(
@@ -581,7 +581,7 @@ def run_experiment_3(config):
                     client_weights = compute_prb_guided_weights(
                         client_contributions, client_deviations, epsilon
                     )
-                    global_model = federated_averaging(client_models, client_weights)
+                    global_model = federated_averaging(global_model, client_models, client_weights)
                 
                 # Evaluate model
                 test_accuracy = compute_test_accuracy(global_model, test_data)
